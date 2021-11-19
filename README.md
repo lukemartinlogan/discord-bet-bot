@@ -11,3 +11,10 @@ The winner of the game will be awarded 2 points.
 !bet [better] [on]
 !winner [user]
 ```
+
+## Note
+Create a file named ".env" in the same folder as the bot with this content filled in.
+```bash
+# .env
+DISCORD_TOKEN={bot-token}
+```
