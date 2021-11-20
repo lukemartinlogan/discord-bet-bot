@@ -17,13 +17,14 @@ class DiscordBot:
             DiscordBot.bot_ = DiscordBot()
         return DiscordBot.bot_
 
-    def __init__(self):
+    def __init__(self, prefix='$'):
         self.token_ = os.getenv('DISCORD_TOKEN')
         self.lock_ = threading.Lock()
         self.is_loaded_ = False
         self.users_ = {}
         self.winning_squad_ = 4
         self.most_dmg_ = 2
+        self.prefix_ = prefix
 
     def store_results(self):
         info = {
@@ -54,7 +55,10 @@ class DiscordBot:
                 'bet-amt': 0,
                 'borrow': 0
             }
-        return f"{user_list} are registered"
+        if len(user_list) > 1:
+            return f"{user_list} are registered"
+        else:
+            return f"{user_list} is registered"
 
     def withdraw(self, user):
         self.set_bet(user, None, 0)
@@ -158,42 +162,42 @@ class DiscordBot:
 
         self.lock_.acquire()
         #!register
-        if '!register' == cmds[0]:
+        if f'{self.prefix_}register' == cmds[0]:
             if len(cmds) == 1:
                 output = self.register([author])
             else:
                 output = self.register(cmds[1:])
             self.store_results()
         #!withdraw
-        if '!withdraw' == cmds[0]:
+        if f'{self.prefix_}withdraw' == cmds[0]:
             output = self.withdraw(author)
         #!bet [bet-on] [bet-amt]
-        if '!bet' == cmds[0]:
+        if f'{self.prefix_}bet' == cmds[0]:
             if len(cmds[1:]) == 2:
                 output = self.set_bet(author, cmds[1], cmds[2])
             else:
                 output = self.set_bet(author, cmds[1])
         #!balance
-        if '!balance' == cmds[0]:
+        if f'{self.prefix_}balance' == cmds[0]:
             output = self.get_balance(author)
         #!borrow [amt]
-        if '!borrow' == cmds[0]:
+        if f'{self.prefix_}borrow' == cmds[0]:
             output = self.borrow(author, cmds[1])
             self.store_results()
         #!pay_credit [amt]
-        if '!pay_credit' == cmds[0]:
+        if f'{self.prefix_}pay_credit' == cmds[0]:
             output = self.pay_credit(author, cmds[1])
             self.store_results()
         #!give_all [amt]
-        if '!give_all' == cmds[0]:
+        if f'{self.prefix_}give_all' == cmds[0]:
             output = self.give_all(cmds[1])
             self.store_results()
         #!most_dmg [user] [winning squad? (yes/no)]
-        if '!most_dmg' == cmds[0]:
+        if f'{self.prefix_}most_dmg' == cmds[0]:
             output = self.set_most_dmg(cmds[1], cmds[2])
             self.store_results()
         #!give [user] [amt]
-        if '!give' == cmds[0]:
+        if f'{self.prefix_}give' == cmds[0]:
             output = self.give(cmds[1], cmds[2])
             self.store_results()
         self.lock_.release()
