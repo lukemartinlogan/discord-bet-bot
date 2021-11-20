@@ -13,6 +13,8 @@ The winner of the game will be awarded 2 points.
 !balance [user]
 !borrow [user] [amt]
 !pay_credit [user] [amt]
+!give [user] [amt]
+!give_all [amt]
 ```
 
 ## Note
