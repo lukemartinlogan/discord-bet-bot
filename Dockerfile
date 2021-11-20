@@ -2,9 +2,10 @@ FROM python:3.8-slim-buster
 
 WORKDIR /bet
 
-COPY requirements.txt requirements.txt
+COPY requirements.txt .
+COPY .env .
 RUN pip3 install -r requirements.txt
 
-COPY ..
+COPY . .
 
 CMD ["python", "bet-bot.py"]
