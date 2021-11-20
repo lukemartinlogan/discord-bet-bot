@@ -9,7 +9,10 @@ The winner of the game will be awarded 2 points.
 ```bash
 !add_users [user1] ... [userN]
 !bet [better] [on]
-!winner [user]
+!most_dmg [user] [winning squad? (yes/no)]
+!balance [user]
+!borrow [user] [amt]
+!pay_credit [user] [amt]
 ```
 
 ## Note

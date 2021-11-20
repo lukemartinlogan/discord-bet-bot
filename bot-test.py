@@ -48,20 +48,24 @@ class DiscordBot:
     def add_users(self, user_list):
         for user in user_list:
             self.users_[user] = {
-                'balance': 0,
+                'balance': 25,
                 'bet-on': None,
-                'bet-amt': 0
+                'bet-amt': 0,
+                'borrow': 0
             }
         print(f"Added users {user_list}")
 
     def set_bet(self, better, on, amt = 1):
+        amt = float(amt)
+        if amt > self.users_[better]['balance']:
+            return f"Cannot bet more than your balance: {self.users_[better]['balance']}"
         self.users_[better]['bet-on'] = on
-        self.users_[better]['bet-amt'] = float(amt)
-        self.users_[better]['balance'] -= float(amt)
+        self.users_[better]['bet-amt'] = amt
+        self.users_[better]['balance'] -= amt
         if on == 'None':
             self.users_[better]['bet-on'] = None
             self.users_[better]['bet-amt'] = 0
-        print(f"{better} bets on {on} for {amt}")
+        return f"{better} bets on {on} for {amt}. Current balance: {self.users_[better]['balance']}."
 
     def set_most_dmg(self, winner, squad_win):
         squad_win = True if squad_win == 'yes' else False
@@ -106,6 +110,22 @@ class DiscordBot:
             scores += f"{user}: gain={profile['gain']}, balance={profile['balance']} shmeckles\n"
         return congrats + scores
 
+    def get_balance(self, user):
+        return json.dumps(users[user], indent=4)
+
+    def borrow(self, user, amt):
+        amt = float(amt)
+        self.users_[user]['borrow'] += amt
+        self.users_[user]['balance'] += amt
+        return f"Congrats. You're in debt! Your balance is now: {self.users_[user]['balance'} shmeckles\n"
+
+    def pay_credit(self, user, amt):
+        amt = float(amt)
+        if amt > self.users_[user]['balance']:
+            return f"FRAUD! POOR! You only have {self.users_[user]['balance']} shmeckles\n"
+        self.users_[user]['borrow'] -= amt
+        self.users_[user]['balance'] -= amt
+
     def process_message(self, message):
         cmds = message.content.split()
         output = None
@@ -113,16 +133,25 @@ class DiscordBot:
         self.lock_.acquire()
         #!add_users [user1] ... [userN]
         if '!add_users' == cmds[0]:
-            self.add_users(cmds[1:])
+            output = self.add_users(cmds[1:])
         #!bet [better] [betting-on]
         if '!bet' == cmds[0]:
             if len(cmds[1:]) == 3:
-                self.set_bet(cmds[1], cmds[2], cmds[3])
+                output = self.set_bet(cmds[1], cmds[2], cmds[3])
             else:
-                self.set_bet(cmds[1], cmds[2])
-        #!winner [user]
+                output = self.set_bet(cmds[1], cmds[2])
+        #!most_dmg [user] [winning squad? (yes/no)]
         if '!most_dmg' == cmds[0]:
             output = self.set_most_dmg(cmds[1], cmds[2])
+        #!balance [user]
+        if '!balance' == cmds[0]:
+            output = self.get_balance(cmds[1])
+        #!borrow [user] [amt]
+        if '!borrow' == cmds[0]:
+            output = self.borrow(cmds[1])
+        #!pay_credit [user] [amt]
+        if '!pay_credit' == cmds[0]:
+            output = self.pay_credit(cmds[1])
         self.lock_.release()
 
         return output
