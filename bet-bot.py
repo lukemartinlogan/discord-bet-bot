@@ -161,11 +161,17 @@ class DiscordBot:
         if f'{self.prefix_}bet' == cmds[0]:
             if len(cmds[1:]) == 2:
                 output = self.set_bet(author, cmds[1], cmds[2])
+            elif len(cmds[1:]) == 3:
+                output = self.set_bet(cmds[1], cmds[2], cmds[3])
             else:
                 output = self.set_bet(author, cmds[1])
+            self.store_results()
         #!balance
         if f'{self.prefix_}balance' == cmds[0]:
-            output = self.get_balance(author)
+            if len(cmds) == 1:
+                output = self.get_balance(author)
+            elif len(cmds) == 2:
+                output = self.get_balance(cmds[1])
         #!give_all [amt]
         if f'{self.prefix_}give_all' == cmds[0]:
             output = self.give_all(cmds[1])
