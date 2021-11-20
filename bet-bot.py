@@ -107,6 +107,10 @@ class DiscordBot:
         self.users_[winner]['gain'] += self.most_dmg_
         self.users_[winner]['balance'] += self.most_dmg_
 
+        # Withdraw all users at round end
+        for user in self.users_.keys():
+            self.withdraw(user)
+
         #Print winners and scores
         if net_weight == 0:
             congrats = 'None of you predicted correctly. Losers.\n'
@@ -124,24 +128,6 @@ class DiscordBot:
         if user not in self.users_:
             return
         return json.dumps(self.users_[user], indent=4)
-
-    def borrow(self, user, amt):
-        if user not in self.users_:
-            return
-        amt = float(amt)
-        self.users_[user]['borrow'] += amt
-        self.users_[user]['balance'] += amt
-        return f"Congrats. You're in debt!\n" + json.dumps(self.users_[user], indent=4)
-
-    def pay_credit(self, user, amt):
-        if user not in self.users_:
-            return
-        amt = float(amt)
-        if amt > self.users_[user]['balance']:
-            return f"FRAUD! POOR! You only have {self.users_[user]['balance']} shmeckles\n"
-        self.users_[user]['borrow'] -= amt
-        self.users_[user]['balance'] -= amt
-        return f"balance={self.users_[user]['balance']}, debt={self.users_[user]['borrow']} shmeckles\n"
 
     def give(self, user, amt):
         if user not in self.users_:
@@ -180,14 +166,6 @@ class DiscordBot:
         #!balance
         if f'{self.prefix_}balance' == cmds[0]:
             output = self.get_balance(author)
-        #!borrow [amt]
-        if f'{self.prefix_}borrow' == cmds[0]:
-            output = self.borrow(author, cmds[1])
-            self.store_results()
-        #!pay_credit [amt]
-        if f'{self.prefix_}pay_credit' == cmds[0]:
-            output = self.pay_credit(author, cmds[1])
-            self.store_results()
         #!give_all [amt]
         if f'{self.prefix_}give_all' == cmds[0]:
             output = self.give_all(cmds[1])
@@ -220,4 +198,8 @@ async def on_message(message):
         await  message.channel.send(output)
 
 bot = DiscordBot()
-client.run(bot.token_)
+
+if (bot.token_):
+    client.run(bot.token_)
+else:
+    print('DISCORD_TOKEN environment variable not found')
