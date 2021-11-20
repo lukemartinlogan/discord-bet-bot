@@ -7,16 +7,16 @@ The winner of the game will be awarded 2 points.
 
 ## Usage
 ```bash
-!register
-!bet [on] [amt]
-!balance
-!borrow [amt]
-!pay_credit [amt]
-!most_dmg [user] [winning squad? (yes/no)]
+$register
+$bet [on] [amt]
+$balance
+$borrow [amt]
+$pay_credit [amt]
+$most_dmg [user] [winning squad? (yes/no)]
 
-!register [user1] ... [userN]
-!give [user] [amt]
-!give_all [amt]
+$register [user1] ... [userN]
+$give [user] [amt]
+$give_all [amt]
 ```
 
 ## Note
