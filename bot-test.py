@@ -1,4 +1,3 @@
-# bot.py
 import os
 import json
 import threading
@@ -218,8 +217,3 @@ async def on_message(message):
 
 bot = DiscordBot()
 client.run(bot.token_)
-
-#!add_user luke wef
-#!bet luke luke
-#!bet wef wef
-#!winner luke
