@@ -7,16 +7,19 @@ The winner of the game will be awarded 2 points.
 
 ## Usage
 ```bash
+#USER COMMANDS
 $register
 $bet [on] [amt]
+$withdraw
 $balance
-$borrow [amt]
-$pay_credit [amt]
 $most_dmg [user] [winning squad? (yes/no)]
 
+#ADMIN COMMANDS
 $register [user1] ... [userN]
 $give [user] [amt]
 $give_all [amt]
+$withdraw [usr]
+$reset_bets
 ```
 
 ## Note

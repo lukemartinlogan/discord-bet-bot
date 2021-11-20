@@ -77,6 +77,10 @@ class DiscordBot:
             self.users_[better]['bet-amt'] = 0
         return f"{better} bets on {on} for {amt}."
 
+    def reset_bets(self):
+        for user in self.users_.keys():
+            self.withdraw(user)
+
     def set_most_dmg(self, winner, squad_win):
         squad_win = True if squad_win == 'yes' else False
         if winner not in self.users_:
@@ -107,9 +111,8 @@ class DiscordBot:
         self.users_[winner]['gain'] += self.most_dmg_
         self.users_[winner]['balance'] += self.most_dmg_
 
-        # Withdraw all users at round end
-        for user in self.users_.keys():
-            self.withdraw(user)
+        #Withdraw all users at round end
+        self.reset_bets()
 
         #Print winners and scores
         if net_weight == 0:
@@ -183,6 +186,10 @@ class DiscordBot:
         #!give [user] [amt]
         if f'{self.prefix_}give' == cmds[0]:
             output = self.give(cmds[1], cmds[2])
+            self.store_results()
+        #!reset_bets
+        if f'{self.prefix_}reset_bets' == cmds[0]:
+            self.reset_bets()
             self.store_results()
         self.lock_.release()
 
