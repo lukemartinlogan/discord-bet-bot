@@ -1,4 +1,5 @@
 bets.json
+.env
 
 /.idea/*
 *.pyc
