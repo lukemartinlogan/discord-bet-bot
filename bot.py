@@ -97,7 +97,7 @@ async def give(ctx: SlashContext, user, amt):
 
     await ctx.send(output)
 
-@slash.slash(guild_ids=servers, name='give_all', description='Give all users credits')
+@slash.slash(guild_ids=servers, name='giveall', description='Give all users credits')
 async def give_all(ctx: SlashContext, amt):
     gamble = Gamble.GetInstance()
     output = gamble.give_all(amt)
