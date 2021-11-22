@@ -13,21 +13,22 @@ class Gamble:
         return Gamble.bot
 
     def __init__(self):
-        self.is_loaded_ = False
         self.users_ = {}
         self.winning_squad_ = 4
         self.winner_ = 2
         self.load_results()
 
     def load_results(self):
-        if not os.path.exists('bets.json'):
-            return
-        with open('bets.json', 'r') as fp:
-            info = json.load(fp)
-        self.users_ = info['users']
-        self.winning_squad_ = info['winning_squad']
-        self.winner_ = info['winner']
-        print(f"self.users_: {self.users_}")
+        if os.path.exists('bets.json'):
+            with open('bets.json', 'r') as fp:
+                info = json.load(fp)
+            self.users_ = info['users']
+            self.winning_squad_ = info['winning_squad']
+            self.winner_ = info['winner']
+            print(f"self.users_: {self.users_}")
+        else:
+            print('bets.json does not exist')
+        
 
     def store_results(self):
         info = {
@@ -35,11 +36,13 @@ class Gamble:
             'winning_squad': self.winning_squad_,
             'winner': self.winner_
         }
+        print(f'writing data: {info}')
         with open('bets.json', 'w') as fp:
             json.dump(info, fp, indent=4)
 
     def register(self, name):
         if name in self.users_:
+            print('already registered')
             return "You're already registered."
         self.users_[name] = {
             'balance': 25,
@@ -47,7 +50,6 @@ class Gamble:
             'bet-amt': 0,
             'borrow': 0
         }
-        self.store_results()
         return f"{name} is registered"
 
     def bet(self, better, on, amt):
@@ -119,7 +121,7 @@ class Gamble:
     def balance(self, id):
         if not self.user_is_registered(id):
             return f'{id} is not in the user list'
-        embed = self.balance_embed(id, self.users_[id])
+        embed = self.balance_embed(self.users_[id])
         return embed
 
     def give(self, user, amt):
@@ -140,8 +142,8 @@ class Gamble:
         else:
             return True
 
-    def balance_embed(self, user, balance_dict):
-        embed = Embed(title=f"{user}'s balance")
+    def balance_embed(self, balance_dict):
+        embed = Embed(title=f"Your balance")
         embed.add_field(name='Balance', value=balance_dict['balance'], inline=True)
         embed.add_field(name='Bet on', value=balance_dict['bet-on'], inline=True)
         embed.add_field(name='Borrow', value=balance_dict['borrow'], inline=True)
