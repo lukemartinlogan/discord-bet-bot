@@ -50,6 +50,7 @@ class Gamble:
             'bet-amt': 0,
             'borrow': 0
         }
+        gamble.store_results()
         return f"{name} is registered"
 
     def bet(self, better, on, amt):
@@ -113,15 +114,15 @@ class Gamble:
         scores = ""
         for user,profile in self.users_.items():
             if profile['gain'] >= 0:
-                scores += f"{user}: gain={profile['gain']}, balance={profile['balance']} shmeckles\n"
+                scores += f"{user}: gain={profile['gain']} 💰, balance={profile['balance']} shmeckles\n"
             else:
-                scores += f"{user}: loss={-profile['gain']}, balance={profile['balance']} shmeckles\n"
+                scores += f"{user}: loss={-profile['gain']} 🔻, balance={profile['balance']} shmeckles\n"
         return congrats + scores
 
     def balance(self, id):
         if not self.user_is_registered(id):
             return f'{id} is not in the user list'
-        embed = self.balance_embed(self.users_[id])
+        embed = self.balance_embed(id, self.users_[id])
         return embed
 
     def give(self, user, amt):
@@ -136,16 +137,38 @@ class Gamble:
             profile['balance'] += float(amt)
         return json.dumps(self.users_, indent=4)
 
+    def leaderboard(self):
+        return self.leaderboard_embed(self.users_)
+
     def user_is_registered(self, id):
         if id not in self.users_:
             return False
         else:
             return True
 
-    def balance_embed(self, balance_dict):
-        embed = Embed(title=f"Your balance")
+    # TODO: maybe it is better convention to move these embed builders to embeds.py ?
+    def balance_embed(self, user, balance_dict):
+        embed = Embed(title=user)
         embed.add_field(name='Balance', value=balance_dict['balance'], inline=True)
         embed.add_field(name='Bet on', value=balance_dict['bet-on'], inline=True)
         embed.add_field(name='Borrow', value=balance_dict['borrow'], inline=True)
         embed.add_field(name='Gain', value=balance_dict['borrow'], inline=True)
         return embed
+
+    def leaderboard_embed(self, users):
+        sorted_balances = sorted(users.items(), key=lambda user: user[1]['balance'], reverse=True)
+        embed = Embed(title="Leaderboard")
+
+        rank = 0
+        user_rankings = ""
+        balances = ""
+
+        for tup in sorted_balances:
+            rank += 1
+            user_rankings += f'`{rank}` ' + tup[0] + '\n'
+            balance = tup[1]['balance']
+            balances += f'`{balance}`\n'
+
+        embed.add_field(name='Rank', value=user_rankings, inline=True)
+        embed.add_field(name='Shmeckles', value=balances, inline=True)
+        return embed        

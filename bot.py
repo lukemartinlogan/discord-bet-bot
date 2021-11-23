@@ -18,7 +18,6 @@ print(f'servers: {servers}')
 async def register(ctx: SlashContext):
     gamble = Gamble.GetInstance()
     output = gamble.register(f"<@!{ctx.author.id}>")
-    gamble.store_results()
 
     await ctx.send(output)
 
@@ -105,8 +104,15 @@ async def give_all(ctx: SlashContext, amt):
 
     await ctx.send(output)
 
-@bot.event
-async def on_slash_command_error(ctx, error):
-    print(f'Error running command: {error}')
+@slash.slash(guild_ids=servers, name='leaderboard', description='Show users ranked by most shmeckles')
+async def leaderboard(ctx: SlashContext):
+    gamble = Gamble.GetInstance()
+    embed = gamble.leaderboard()
+
+    await ctx.send(embed=embed)
+
+# @bot.event
+# async def on_slash_command_error(ctx, error):
+#     print(f'Error running command: {error}') 
 
 bot.run(token)
