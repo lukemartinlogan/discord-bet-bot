@@ -73,8 +73,6 @@ class Gamble:
             self.withdraw(user)
 
     def winner(self, winner, squad_win):
-        squad_win = True if squad_win == 'yes' else False
-
         if not self.user_is_registered(winner):
             return f'{winner} is not in the user list'
 
@@ -113,8 +111,10 @@ class Gamble:
             congrats = f"Congrats! The following sweaty people guessed correctly: {','.join(correct_betters)}\n"
         scores = ""
         for user,profile in self.users_.items():
-            if profile['gain'] >= 0:
+            if profile['gain'] > 0:
                 scores += f"{user}: gain={profile['gain']} 💰, balance={profile['balance']} shmeckles\n"
+            elif profile['gain'] == 0: 
+                scores += f"{user}: gain={profile['gain']} 0️⃣, balance={profile['balance']} shmeckles\n"
             else:
                 scores += f"{user}: loss={-profile['gain']} 🔻, balance={profile['balance']} shmeckles\n"
         return congrats + scores
