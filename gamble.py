@@ -159,3 +159,24 @@ class Gamble:
         embed.add_field(name='Borrow', value=balance_dict['borrow'], inline=True)
         embed.add_field(name='Gain', value=balance_dict['borrow'], inline=True)
         return embed
+
+    def leaderboard_embed(self, users):
+        sorted_balances = sorted(users.items(), key=lambda user: user[1]['balance'], reverse=True)
+        embed = Embed(title="Leaderboard")
+
+        rank = 0
+        user_rankings = ""
+        balances = ""
+
+        for tup in sorted_balances:
+            rank += 1
+            user_rankings += f'`{rank}` ' + tup[0] + '\n'
+            balance = tup[1]['balance']
+            balances += f'`{balance}`\n'
+
+        embed.add_field(name='Rank', value=user_rankings, inline=True)
+        embed.add_field(name='Shmeckles', value=balances, inline=True)
+        return embed
+
+    def leaderboard(self):
+        return self.leaderboard_embed(self.users_)
