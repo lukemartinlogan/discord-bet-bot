@@ -22,9 +22,6 @@ class Gamble:
     def make_id(self, id):
         return int(''.join(filter(str.isdigit, id)))
 
-    def get_user(self, id):
-        return self.users_[self.make_id(id)]
-
     def load_results(self):
         if not os.path.exists('bets.json'):
             return
@@ -45,6 +42,7 @@ class Gamble:
             json.dump(info, fp, indent=4)
 
     def register(self, id):
+        id = self.make_id(id)
         if self.user_is_registered(id):
             return "You're already registered."
         self.users_[self.make_id(id)] = {
@@ -57,6 +55,8 @@ class Gamble:
         return f"{id} is registered"
 
     def bet(self, better, on, amt):
+        better = self.make_id(better)
+        on = self.make_id(on)
         if self.user_is_registered(better):
             return f'{better} is not registered'
         amt = float(amt)
@@ -68,6 +68,7 @@ class Gamble:
         return f'{better} bets on {on} for {amt}'
 
     def withdraw(self, id):
+        id = self.make_id(id)
         self.bet(id, None, 0)
         return f"{id} abstains from betting"
 
@@ -76,6 +77,7 @@ class Gamble:
             self.withdraw(user)
 
     def winner(self, winner, squad_win):
+        winner = self.make_id(winner)
         squad_win = True if squad_win == 'yes' else False
         if not self.user_is_registered(winner):
             return f'{winner} is not in the user list'
@@ -122,16 +124,18 @@ class Gamble:
         return congrats + scores
 
     def balance(self, id):
+        id = self.make_id(id)
         if not self.user_is_registered(id):
             return f'{id} is not in the user list'
-        embed = self.balance_embed(id, self.get_user(id))
+        embed = self.balance_embed(id, self.users_[id])
         return embed
 
     def give(self, user, amt):
+        user = self.make_id(user)
         if not self.user_is_registered(user):
             return f'{user} is not a valid user'
         amt = float(amt)
-        self.get_user(user)['balance'] += amt
+        self.users_[user]['balance'] += amt
         return f"balance={self.get_user(user)['balance']} shmeckles"
 
     def give_all(self, amt):
@@ -140,12 +144,14 @@ class Gamble:
         return json.dumps(self.users_, indent=4)
 
     def user_is_registered(self, id):
+        id = self.make_id(id)
         if id not in self.users_:
             return False
         else:
             return True
 
     def balance_embed(self, user, balance_dict):
+        user = self.make_id(user)
         embed = Embed(title=f"{user}'s balance")
         embed.add_field(name='Balance', value=balance_dict['balance'], inline=True)
         embed.add_field(name='Bet on', value=balance_dict['bet-on'], inline=True)
