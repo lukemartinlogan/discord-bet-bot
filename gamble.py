@@ -19,6 +19,12 @@ class Gamble:
         self.winner_ = 2
         self.load_results()
 
+    def make_id(self, id):
+        return int(''.join(filter(str.isdigit, id)))
+
+    def get_user(self, id):
+        return self.users_[self.make_id(id)]
+
     def load_results(self):
         if not os.path.exists('bets.json'):
             return
@@ -38,26 +44,26 @@ class Gamble:
         with open('bets.json', 'w') as fp:
             json.dump(info, fp, indent=4)
 
-    def register(self, name):
-        if name in self.users_:
+    def register(self, id):
+        if self.user_is_registered(id):
             return "You're already registered."
-        self.users_[name] = {
+        self.users_[self.make_id(id)] = {
             'balance': 25,
             'bet-on': None,
             'bet-amt': 0,
             'borrow': 0
         }
         self.store_results()
-        return f"{name} is registered"
+        return f"{id} is registered"
 
     def bet(self, better, on, amt):
-        if better not in self.users_:
+        if self.user_is_registered(better):
             return f'{better} is not registered'
         amt = float(amt)
-        if amt > self.users_[better]['balance']:
-            return f"Cannot bet more than your balance: {self.users_[better]['balance']}"
-        self.users_[better]['bet-on'] = on
-        self.users_[better]['bet-amt'] = amt
+        if amt > self.get_user(better)['balance']:
+            return f"Cannot bet more than your balance: {self.get_user(better)['balance']}"
+        self.get_user(better)['bet-on'] = on
+        self.get_user(better)['bet-amt'] = amt
 
         return f'{better} bets on {on} for {amt}'
 
@@ -71,7 +77,6 @@ class Gamble:
 
     def winner(self, winner, squad_win):
         squad_win = True if squad_win == 'yes' else False
-
         if not self.user_is_registered(winner):
             return f'{winner} is not in the user list'
 
@@ -97,8 +102,8 @@ class Gamble:
                 profile['balance'] += self.winning_squad_
 
         #Reward for doing most damage
-        self.users_[winner]['gain'] += self.winner_
-        self.users_[winner]['balance'] += self.winner_
+        self.get_user(winner)['gain'] += self.winner_
+        self.get_user(winner)['balance'] += self.winner_
 
         #Withdraw all users at round end
         self.reset_bets()
@@ -119,15 +124,15 @@ class Gamble:
     def balance(self, id):
         if not self.user_is_registered(id):
             return f'{id} is not in the user list'
-        embed = self.balance_embed(id, self.users_[id])
+        embed = self.balance_embed(id, self.get_user(id))
         return embed
 
     def give(self, user, amt):
         if not self.user_is_registered(user):
             return f'{user} is not a valid user'
         amt = float(amt)
-        self.users_[user]['balance'] += amt
-        return f"balance={self.users_[user]['balance']} shmeckles"
+        self.get_user(user)['balance'] += amt
+        return f"balance={self.get_user(user)['balance']} shmeckles"
 
     def give_all(self, amt):
         for profile in self.users_.values():
