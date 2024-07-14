@@ -21,7 +21,7 @@ class Gamble:
 
     def make_id(self, id):
         id = str(id)
-        return ''.join(filter(str.isdigit, id))
+        return ''.join([c for c in id if c.isdigit()])
 
     def load_results(self):
         if not os.path.exists('bets.json'):
