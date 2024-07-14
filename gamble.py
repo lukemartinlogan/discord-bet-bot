@@ -20,7 +20,8 @@ class Gamble:
         self.load_results()
 
     def make_id(self, id):
-        return int(''.join(filter(str.isdigit, id)))
+        id = str(id)
+        return ''.join(filter(str.isdigit, id))
 
     def load_results(self):
         if not os.path.exists('bets.json'):
