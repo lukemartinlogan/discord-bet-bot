@@ -18,7 +18,7 @@ print(f'servers: {servers}')
 @slash.slash(guild_ids=servers, name='register', description='Registers a user')
 async def register(ctx: SlashContext):
     gamble = Gamble.GetInstance()
-    output = gamble.register(f"<@!{ctx.author.id}>")
+    output = gamble.register(ctx.author.id)
 
     await ctx.send(output)
 
@@ -44,7 +44,7 @@ async def register(ctx: SlashContext):
 )
 async def bet(ctx: SlashContext, on, amt):
     gamble = Gamble.GetInstance()
-    better = f"<@!{ctx.author.id}>"
+    better = ctx.author.id
     output = gamble.bet(better, on, amt)
     gamble.store_results()
 
@@ -54,7 +54,7 @@ async def bet(ctx: SlashContext, on, amt):
 @slash.slash(guild_ids=servers, name='withdraw', description='Abstain from betting')
 async def withdraw(ctx: SlashContext):
     gamble = Gamble.GetInstance()
-    output = gamble.withdraw(f"<@!{ctx.author.id}>")
+    output = gamble.withdraw(ctx.author.id)
 
     await ctx.send(output)
 
@@ -82,14 +82,13 @@ async def winner(ctx: SlashContext, winner, squad_win):
     gamble = Gamble.GetInstance()
     output = gamble.winner(winner, squad_win)
     gamble.store_results()
-
     await ctx.send(output)
 
 
 @slash.slash(guild_ids=servers, name='balance', description='Check user balance')
 async def balance(ctx: SlashContext):
     gamble = Gamble.GetInstance()
-    embed = gamble.balance(f"<@!{ctx.author.id}>")
+    embed = gamble.balance(ctx.author.id)
 
     await ctx.send(embed=embed)
 
@@ -97,7 +96,7 @@ async def balance(ctx: SlashContext):
 @slash.slash(guild_ids=servers, name='give', description='Give a user credits')
 async def give(ctx: SlashContext, user, amt):
     gamble = Gamble.GetInstance()
-    output = gamble.give(f"{user}", amt)
+    output = gamble.give(user, amt)
     gamble.store_results()
 
     await ctx.send(output)
