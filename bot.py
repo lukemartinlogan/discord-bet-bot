@@ -7,9 +7,10 @@ from discord_slash.utils.manage_commands import create_option
 from dotenv import load_dotenv
 
 load_dotenv()
-bot.run(os.getenv('DISCORD_TOKEN'))
 bot = Bot(command_prefix="1")
-slash = SlashCommand(bot)
+slash = SlashCommand(bot, sync_commands=True)
+token = os.getenv('DISCORD_TOKEN')
+servers = [int(os.getenv("SERVER_1", None))]
 
 @slash.slash(name='register', description='Registers a user')
 async def register(ctx: SlashContext):
