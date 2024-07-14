@@ -77,6 +77,10 @@ class Gamble:
         for user in self.users_.keys():
             self.withdraw(user)
 
+    def crash_market(self):
+        for profile in self.users_.values():
+            profile['balance'] = 0
+
     def winner(self, winner, squad_win):
         winner = self.make_id(winner)
         squad_win = True if squad_win == 'yes' else False

@@ -119,6 +119,13 @@ async def leaderboard(ctx: SlashContext):
     await ctx.send(embed=embed)
 
 
+@slash.slash(guild_ids=servers, name='crash_market', description='Show users ranked by most shmeckles')
+async def leaderboard(ctx: SlashContext):
+    gamble = Gamble.GetInstance()
+    embed = gamble.crash_market()
+    await ctx.send(embed=embed)
+
+
 # @bot.event
 # async def on_slash_command_error(ctx, error):
 #     print(f'Error running command: {error}')
