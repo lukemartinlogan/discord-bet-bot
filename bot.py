@@ -14,12 +14,17 @@ servers = [int(os.getenv("SERVER_1", None))]
 print(f'using token: {token}')
 print(f'servers: {servers}')
 
-@slash.slash(name='register', description='Registers a user')
+
+@slash.slash(guild_ids=servers, name='register', description='Registers a user')
 async def register(ctx: SlashContext):
     gamble = Gamble.GetInstance()
-    await ctx.send(gamble.register(f"<@!{ctx.author.id}>"))
+    output = gamble.register(f"<@!{ctx.author.id}>")
+
+    await ctx.send(output)
+
 
 @slash.slash(
+    guild_ids=servers,
     name='bet',
     description='Bet credits on a user',
     options=[
@@ -40,14 +45,22 @@ async def register(ctx: SlashContext):
 async def bet(ctx: SlashContext, on, amt):
     gamble = Gamble.GetInstance()
     better = f"<@!{ctx.author.id}>"
-    await ctx.send(gamble.bet(better, on, amt))
+    output = gamble.bet(better, on, amt)
+    gamble.store_results()
 
-@slash.slash(name='withdraw', description='Abstain from betting')
+    await ctx.send(output)
+
+
+@slash.slash(guild_ids=servers, name='withdraw', description='Abstain from betting')
 async def withdraw(ctx: SlashContext):
     gamble = Gamble.GetInstance()
-    await ctx.send(gamble.withdraw(f"<@!{ctx.author.id}>"))
+    output = gamble.withdraw(f"<@!{ctx.author.id}>")
+
+    await ctx.send(output)
+
 
 @slash.slash(
+    guild_ids=servers,
     name='winner',
     description='Input the winner of the round',
     options=[
@@ -67,21 +80,48 @@ async def withdraw(ctx: SlashContext):
 )
 async def winner(ctx: SlashContext, winner, squad_win):
     gamble = Gamble.GetInstance()
-    await ctx.send(gamble.winner(winner, squad_win))
+    output = gamble.winner(winner, squad_win)
+    gamble.store_results()
 
-@slash.slash(name='balance', description='Check user balance')
+    await ctx.send(output)
+
+
+@slash.slash(guild_ids=servers, name='balance', description='Check user balance')
 async def balance(ctx: SlashContext):
     gamble = Gamble.GetInstance()
     embed = gamble.balance(f"<@!{ctx.author.id}>")
+
     await ctx.send(embed=embed)
 
-@slash.slash(name='give', description='Give a user credits')
+
+@slash.slash(guild_ids=servers, name='give', description='Give a user credits')
 async def give(ctx: SlashContext, user, amt):
     gamble = Gamble.GetInstance()
-    await ctx.send(gamble.give(f"{user}", amt))
+    output = gamble.give(f"{user}", amt)
+    gamble.store_results()
 
-@slash.slash(name='give_all', description='Give all users credits')
+    await ctx.send(output)
+
+
+@slash.slash(guild_ids=servers, name='giveall', description='Give all users credits')
 async def give_all(ctx: SlashContext, amt):
     gamble = Gamble.GetInstance()
-    await ctx.send(gamble.give_all(amt))
+    output = gamble.give_all(amt)
+    gamble.store_results()
 
+    await ctx.send(output)
+
+
+@slash.slash(guild_ids=servers, name='leaderboard', description='Show users ranked by most shmeckles')
+async def leaderboard(ctx: SlashContext):
+    gamble = Gamble.GetInstance()
+    embed = gamble.leaderboard()
+
+    await ctx.send(embed=embed)
+
+
+# @bot.event
+# async def on_slash_command_error(ctx, error):
+#     print(f'Error running command: {error}')
+
+bot.run(token)
