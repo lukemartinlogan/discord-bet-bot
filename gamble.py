@@ -165,15 +165,17 @@ class Gamble:
         embed = Embed(title="Leaderboard")
 
         rank = 0
-        user_rankings = ""
-        balances = ""
-
+        user_rankings = []
+        balances = []
         for tup in sorted_balances:
             rank += 1
-            user_rankings += f'`{rank}` ' + tup[0] + '\n'
+            name_ref = f'<@!{tup[0]}>'
             balance = tup[1]['balance']
-            balances += f'`{balance}`\n'
+            user_rankings.append(f'`{rank} {name_ref}')
+            balances.append(str(balance))
 
+        user_rankings = '\n'.join(user_rankings)
+        balances = '\n'.join(balances)
         embed.add_field(name='Rank', value=user_rankings, inline=True)
         embed.add_field(name='Shmeckles', value=balances, inline=True)
         return embed
