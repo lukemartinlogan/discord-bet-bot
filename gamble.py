@@ -58,7 +58,7 @@ class Gamble:
     def bet(self, better, on, amt):
         better = self.make_id(better)
         on = self.make_id(on)
-        if self.user_is_registered(better):
+        if not self.user_is_registered(better):
             return f'{better} is not registered'
         amt = float(amt)
         if amt > self.get_user(better)['balance']:
