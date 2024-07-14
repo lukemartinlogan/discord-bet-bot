@@ -11,6 +11,8 @@ bot = Bot(command_prefix="1")
 slash = SlashCommand(bot, sync_commands=True)
 token = os.getenv('DISCORD_TOKEN')
 servers = [int(os.getenv("SERVER_1", None))]
+print(f'using token: {token}')
+print(f'servers: {servers}')
 
 @slash.slash(name='register', description='Registers a user')
 async def register(ctx: SlashContext):
