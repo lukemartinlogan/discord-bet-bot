@@ -122,8 +122,8 @@ async def leaderboard(ctx: SlashContext):
 @slash.slash(guild_ids=servers, name='crash_market', description='Show users ranked by most shmeckles')
 async def crash_market(ctx: SlashContext):
     gamble = Gamble.GetInstance()
-    embed = gamble.crash_market()
-    await ctx.send(embed=embed)
+    gamble.crash_market()
+    await ctx.send("Say goodbye to all your money, losers!")
 
 
 # @bot.event
