@@ -119,7 +119,7 @@ async def leaderboard(ctx: SlashContext):
     await ctx.send(embed=embed)
 
 
-@slash.slash(guild_ids=servers, name='crash_market', description='Show users ranked by most shmeckles')
+@slash.slash(guild_ids=servers, name='crash_market', description='Erase all users money.')
 async def crash_market(ctx: SlashContext):
     gamble = Gamble.GetInstance()
     gamble.crash_market()
