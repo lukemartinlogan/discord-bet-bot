@@ -181,7 +181,7 @@ class Gamble:
         balances = []
         for tup in sorted_balances:
             rank += 1
-            name_ref = f'<@!{tup[0]}>'
+            name_ref = self.make_ref(tup[0])
             balance = tup[1]['balance']
             user_rankings.append(f'`{rank}` {name_ref}')
             balances.append(str(balance))
