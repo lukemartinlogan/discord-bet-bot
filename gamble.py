@@ -171,7 +171,7 @@ class Gamble:
             rank += 1
             name_ref = f'<@!{tup[0]}>'
             balance = tup[1]['balance']
-            user_rankings.append(f'`{rank} {name_ref}')
+            user_rankings.append(f'`{rank}` {name_ref}')
             balances.append(str(balance))
 
         user_rankings = '\n'.join(user_rankings)
