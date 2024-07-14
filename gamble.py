@@ -23,12 +23,17 @@ class Gamble:
         id = str(id)
         return ''.join([c for c in id if c.isdigit()])
 
+    def make_ref(self, id):
+        return f'<@!{id}>'
+
     def load_results(self):
         if not os.path.exists('bets.json'):
             return
         with open('bets.json', 'r') as fp:
             info = json.load(fp)
         self.users_ = info['users']
+        for user in self.users_:
+            self.users_[user]['ref'] = self.make_ref(user)
         self.winning_squad_ = info['winning_squad']
         self.winner_ = info['winner']
         print(f"self.users_: {self.users_}")
@@ -46,11 +51,12 @@ class Gamble:
         id = self.make_id(id)
         if self.user_is_registered(id):
             return "You're already registered."
-        self.users_[self.make_id(id)] = {
+        self.users_[id] = {
             'balance': 25,
             'bet-on': None,
             'bet-amt': 0,
-            'borrow': 0
+            'borrow': 0,
+            'ref': self.make_ref(id)
         }
         self.store_results()
         return f"{id} is registered"
@@ -66,7 +72,7 @@ class Gamble:
         self.users_[better]['bet-on'] = on
         self.users_[better]['bet-amt'] = amt
 
-        return f'{better} bets on {on} for {amt}'
+        return f'{self.users_[better]["ref"]} bets on {on} for {amt}'
 
     def withdraw(self, id):
         id = self.make_id(id)
@@ -85,11 +91,13 @@ class Gamble:
         winner = self.make_id(winner)
         squad_win = True if squad_win == 'yes' else False
         if not self.user_is_registered(winner):
-            return f'{winner} is not in the user list'
+            return f'{winner} ({self.make_ref(winner)}) is not in the user list'
 
         pot = sum([profile['bet-amt'] for profile in self.users_.values()])
-        correct_betters = [user for user,profile in self.users_.items() if profile['bet-on'] == winner]
-        correct_bets = np.array([(profile['bet-on'] == winner) for profile in self.users_.values()])
+        correct_betters = [profile['ref'] for user, profile in self.users_.items()
+                           if profile['bet-on'] == winner]
+        correct_bets = np.array([(profile['bet-on'] == winner)
+                                 for profile in self.users_.values()])
         weights = np.array([profile['bet-amt'] for profile in self.users_.values()])
         weights = weights*correct_bets
         net_weight = np.sum(weights)
@@ -98,7 +106,7 @@ class Gamble:
         print(weights)
 
         #Reward for guessing correctly
-        for profile,weight in zip(self.users_.values(), weights):
+        for profile, weight in zip(self.users_.values(), weights):
             profile['gain'] = pot*weight - profile['bet-amt']
             profile['balance'] += profile['gain']
 
@@ -119,29 +127,29 @@ class Gamble:
         if net_weight == 0:
             congrats = 'None of you predicted correctly. Losers.\n'
         else:
-            congrats = f"Congrats! The following sweaty people guessed correctly: {','.join(correct_betters)}\n"
+            congrats = f'Congrats! The following sweaty people guessed correctly: {",".join(correct_betters)}\n'
         scores = ""
-        for user,profile in self.users_.items():
+        for user, profile in self.users_.items():
             if profile['gain'] >= 0:
-                scores += f"{user}: gain={profile['gain']}, balance={profile['balance']} shmeckles\n"
+                scores += f'{profile["ref"]}: gain={profile["gain"]}, balance={profile["balance"]} shmeckles\n'
             else:
-                scores += f"{user}: loss={-profile['gain']}, balance={profile['balance']} shmeckles\n"
+                scores += f'{profile["ref"]}: loss={-profile["gain"]}, balance={profile["balance"]} shmeckles\n'
         return congrats + scores
 
     def balance(self, id):
         id = self.make_id(id)
         if not self.user_is_registered(id):
-            return f'{id} is not in the user list'
+            return f'{id} ({self.make_ref(id)}) is not in the user list'
         embed = self.balance_embed(id, self.users_[id])
         return embed
 
-    def give(self, user, amt):
-        user = self.make_id(user)
-        if not self.user_is_registered(user):
-            return f'{user} is not a valid user'
+    def give(self, id, amt):
+        id = self.make_id(id)
+        if not self.user_is_registered(id):
+            return f'{id} ({self.make_ref(id)}) is not a valid user'
         amt = float(amt)
-        self.users_[user]['balance'] += amt
-        return f"balance={self.users_[user]['balance']} shmeckles"
+        self.users_[id]['balance'] += amt
+        return f"balance={self.users_[id]['balance']} shmeckles"
 
     def give_all(self, amt):
         for profile in self.users_.values():
