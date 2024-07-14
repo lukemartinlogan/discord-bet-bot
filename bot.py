@@ -4,7 +4,10 @@ from discord import Intents, Embed
 from discord.ext.commands import Bot
 from discord_slash import SlashCommand, SlashContext
 from discord_slash.utils.manage_commands import create_option
+from dotenv import load_dotenv
 
+load_dotenv()
+bot.run(os.getenv('DISCORD_TOKEN'))
 bot = Bot(command_prefix="1")
 slash = SlashCommand(bot)
 
@@ -79,4 +82,3 @@ async def give_all(ctx: SlashContext, amt):
     gamble = Gamble.GetInstance()
     await ctx.send(gamble.give_all(amt))
 
-bot.run(os.getenv('DISCORD_TOKEN'))
