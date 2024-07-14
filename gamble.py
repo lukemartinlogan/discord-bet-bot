@@ -61,10 +61,10 @@ class Gamble:
         if not self.user_is_registered(better):
             return f'{better} is not registered'
         amt = float(amt)
-        if amt > self.get_user(better)['balance']:
-            return f"Cannot bet more than your balance: {self.get_user(better)['balance']}"
-        self.get_user(better)['bet-on'] = on
-        self.get_user(better)['bet-amt'] = amt
+        if amt > self.users_[better]['balance']:
+            return f"Cannot bet more than your balance: {self.users_[better]['balance']}"
+        self.users_[better]['bet-on'] = on
+        self.users_[better]['bet-amt'] = amt
 
         return f'{better} bets on {on} for {amt}'
 
@@ -105,8 +105,8 @@ class Gamble:
                 profile['balance'] += self.winning_squad_
 
         #Reward for doing most damage
-        self.get_user(winner)['gain'] += self.winner_
-        self.get_user(winner)['balance'] += self.winner_
+        self.users_[winner]['gain'] += self.winner_
+        self.users_[winner]['balance'] += self.winner_
 
         #Withdraw all users at round end
         self.reset_bets()
@@ -137,7 +137,7 @@ class Gamble:
             return f'{user} is not a valid user'
         amt = float(amt)
         self.users_[user]['balance'] += amt
-        return f"balance={self.get_user(user)['balance']} shmeckles"
+        return f"balance={self.users_[user]['balance']} shmeckles"
 
     def give_all(self, amt):
         for profile in self.users_.values():
