@@ -72,7 +72,7 @@ class Gamble:
         self.users_[better]['bet-on'] = on
         self.users_[better]['bet-amt'] = amt
 
-        return f'{self.users_[better]["ref"]} bets on {on} for {amt}'
+        return f'{self.users_[better]["ref"]} bets on {self.users_[on]["ref"]} for {amt}'
 
     def withdraw(self, id):
         id = self.make_id(id)
